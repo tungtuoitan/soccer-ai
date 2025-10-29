@@ -621,10 +621,10 @@ function AIDrawer({ open, onClose, context }) {
 
     const handleMouseMove = (e) => {
       const deltaY = dragStartY - e.clientY;
-      const newHeight = Math.max(50, Math.min(900, dragStartHeight + deltaY));
+      const newHeight = Math.max(64, Math.min(900, dragStartHeight + deltaY));
       setHeight(newHeight);
       
-      if (newHeight <= 50) {
+      if (newHeight <= 64) {
         setIsMinimized(true);
       } else {
         setIsMinimized(false);
@@ -655,7 +655,7 @@ function AIDrawer({ open, onClose, context }) {
   // Handle minimize
   const handleMinimize = () => {
     setIsMinimized(true);
-    setHeight(50);
+    setHeight(64);
   };
 
   // Handle expand from minimized
@@ -665,7 +665,7 @@ function AIDrawer({ open, onClose, context }) {
   };
 
   const width = isToggled ? 400 : 900;
-  const currentHeight = isMinimized ? 50 : height;
+  const currentHeight = isMinimized ? 64 : height;
 
   // Determine position class based on state
   const getPositionClass = () => {
@@ -711,8 +711,13 @@ function AIDrawer({ open, onClose, context }) {
       {!isMinimized && (
         <div
           onMouseDown={handleMouseDown}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            handleMinimize();
+          }}
           className="absolute top-0 left-0 right-0 h-3 cursor-ns-resize hover:bg-gradient-to-b hover:from-sky-500/20 hover:to-transparent transition-all z-10 flex items-center justify-center pt-1"
           style={{ touchAction: "none" }}
+          title="Drag to resize, double-click to minimize"
         >
           <div className="w-10 h-1 bg-slate-400/40 rounded-full hover:bg-slate-400/60 transition-colors" />
         </div>
@@ -748,7 +753,7 @@ function AIDrawer({ open, onClose, context }) {
       {!isMinimized && (
         <div 
           ref={listRef} 
-          className="flex-1 overflow-y-auto px-4 py-3 space-y-2 apple-scrollbar"
+          className="flex-1 overflow-y-auto px-4 py-3 space-y-2 apple-scrollbars"
           style={{ minHeight: "100px" }}
         >
           {messages.length === 0 ? (
@@ -780,7 +785,7 @@ function AIDrawer({ open, onClose, context }) {
 
       {/* Input area - always visible */}
       <div 
-        className="border-t border-slate-200/50 bg-white/50 backdrop-blur px-3 py-3 flex items-center gap-2 shrink-0"
+        className="border-t border-slate-200/50 backdrop-blur flex items-center gap-2 shrink-0 relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <input
@@ -802,7 +807,8 @@ function AIDrawer({ open, onClose, context }) {
             if (isMinimized) handleExpand();
           }}
           placeholder="Ask me anything..."
-          className="flex-1 rounded-xl bg-slate-100/50 px-4 py-2.5 text-sm focus:outline-none focus:bg-slate-100 placeholder:text-slate-400 transition-all"
+          className="flex-1 rounded-xl bg-transparent border-0 px-6 py-5 text-base focus:outline-none placeholder:text-slate-600 transition-all relative z-10"
+
         />
         {!isMinimized && (
           <button 
