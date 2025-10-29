@@ -730,7 +730,7 @@ export default function App() {
           <div className="text-4xl font-black tracking-tight transform -translate-y-[3px]">Soccer<span className="text-sky-600">AI</span></div>
           <nav className="hidden md:flex items-center gap-1 text-sm">
             {[
-            //   { key: "home", label: "Home" },
+              { key: "home", label: "Home" },
               { key: "match", label: "Match Hub" },
               { key: "schedule", label: "Lịch thi đấu" },
               { key: "community", label: "Community" },
@@ -1014,15 +1014,116 @@ export default function App() {
         )}
 
         {activeTab === "community" && (
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Post composer */}
             <div className="flex items-center gap-2">
               <input className="flex-1 rounded-xl border px-3 py-2" placeholder="Chia sẻ cảm nghĩ, ảnh, link highlight…" />
               <button className="px-3 py-2 rounded-xl bg-slate-900 text-white">Đăng</button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {DUMMY_COMMUNITY.map((p) => (
-                <CommunityPost key={p.id} post={p} />
-              ))}
+            
+            {/* Layout tương tự homepage: bên trái community posts, bên phải sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Community posts - 2 columns */}
+              <div className="lg:col-span-2 space-y-4">
+                <SectionHeader title="Bài viết cộng đồng" subtitle="Thảo luận và chia sẻ từ fan bóng đá" />
+                <div className="space-y-4">
+                  {DUMMY_COMMUNITY.map((p) => (
+                    <CommunityPost key={p.id} post={p} />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Right sidebar - 1 column */}
+              <div className="lg:col-span-1 space-y-4">
+                <SectionHeader title="Tin liên quan" subtitle="Cập nhật nhanh" />
+                
+                {/* Text-only news items - same as homepage */}
+                <div className="space-y-3">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 8 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className="p-4 border rounded-2xl bg-white/80 backdrop-blur hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h4 className="font-semibold text-sm leading-tight">Prisco's NFL Power Rankings: Amid week of blowouts, some reminders</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-slate-500">NFL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div 
+                    initial={{ opacity: 0, y: 8 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.1 }}
+                    className="p-4 border rounded-2xl bg-white/80 backdrop-blur hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h4 className="font-semibold text-sm leading-tight">Pitt's Narduzzi: NCAA call on pro sports betting 'one of the stupidest decisions'</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-slate-500">College Football</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div 
+                    initial={{ opacity: 0, y: 8 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.2 }}
+                    className="p-4 border rounded-2xl bg-white/80 backdrop-blur hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h4 className="font-semibold text-sm leading-tight">Freeman walk-off gives Dodgers 2-1 World Series lead after historic Game 3</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-slate-500">MLB</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div 
+                    initial={{ opacity: 0, y: 8 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.3 }}
+                    className="p-4 border rounded-2xl bg-white/80 backdrop-blur hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h4 className="font-semibold text-sm leading-tight">Commanders TE Zach Ertz makes NFL history vs. Chiefs on 'MNF'</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-slate-500">NFL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div 
+                    initial={{ opacity: 0, y: 8 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.4 }}
+                    className="p-4 border rounded-2xl bg-white/80 backdrop-blur hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h4 className="font-semibold text-sm leading-tight">Report: Veteran receiver reuniting with Rodgers on Steelers after 49ers stint</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-slate-500">NFL</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
             </div>
           </div>
         )}
