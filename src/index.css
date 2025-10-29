@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Apple-style scrollbar */
+.apple-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.apple-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.apple-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.apple-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* For Firefox */
+.apple-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* AI Drawer Position Classes */
+/* Use left + transform for smooth transitions between positions */
+.ai-drawer-center-expanded {
+  left: 50% !important;
+  bottom: 20px !important;
+  right: auto !important;
+  top: auto !important;
+  transform: translateX(-50%) !important;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ai-drawer-center-minimized {
+  left: 50% !important;
+  bottom: 20px !important;
+  top: auto !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Right position: use calc with left to ensure smooth transition */
+.ai-drawer-right-expanded {
+  left: calc(100vw - 420px) !important;
+  bottom: 20px !important;
+  right: auto !important;
+  top: auto !important;
+  transform: translateX(0) !important;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ai-drawer-right-minimized {
+  left: calc(100vw - 420px) !important;
+  bottom: 20px !important;
+  right: auto !important;
+  top: auto !important;
+  transform: translateX(0) !important;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
