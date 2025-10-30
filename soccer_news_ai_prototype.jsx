@@ -621,10 +621,10 @@ function AIDrawer({ open, onClose, context }) {
 
     const handleMouseMove = (e) => {
       const deltaY = dragStartY - e.clientY;
-      const newHeight = Math.max(64, Math.min(900, dragStartHeight + deltaY));
+      const newHeight = Math.max(65, Math.min(900, dragStartHeight + deltaY));
       setHeight(newHeight);
       
-      if (newHeight <= 64) {
+      if (newHeight <= 65) {
         setIsMinimized(true);
       } else {
         setIsMinimized(false);
@@ -655,7 +655,7 @@ function AIDrawer({ open, onClose, context }) {
   // Handle minimize
   const handleMinimize = () => {
     setIsMinimized(true);
-    setHeight(64);
+    setHeight(65);
   };
 
   // Handle expand from minimized
@@ -665,7 +665,7 @@ function AIDrawer({ open, onClose, context }) {
   };
 
   const width = isToggled ? 400 : 900;
-  const currentHeight = isMinimized ? 64 : height;
+  const currentHeight = isMinimized ? 65 : height;
 
   // Determine position class based on state
   const getPositionClass = () => {
@@ -698,7 +698,7 @@ function AIDrawer({ open, onClose, context }) {
         scale: { duration: 0.2 }
       }}
       className={cn(
-        "flex flex-col rounded-3xl border border-slate-200/50 overflow-hidden",
+        "flex flex-col rounded-[2rem] border border-slate-200/50 overflow-hidden",
         "bg-gradient-to-br from-slate-50/95 via-white/95 to-slate-100/95",
         "backdrop-blur-xl shadow-2xl shadow-slate-900/10",
         getPositionClass()
@@ -814,7 +814,7 @@ function AIDrawer({ open, onClose, context }) {
           <button 
             onClick={() => handleAsk()} 
             disabled={!input.trim() || isLoading}
-            className="p-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:from-sky-600 hover:to-sky-700 hover:shadow-lg hover:shadow-sky-500/25 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all hover:scale-105 active:scale-95"
+            className="relative p-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden hover:scale-105 active:scale-95"
             title="Send message (Enter)"
           >
             {isLoading ? (
@@ -843,6 +843,7 @@ function SectionHeader({ title, actions, subtitle }) {
       <div className="flex items-center gap-2">{actions}</div>
     </div>
   );
+        
 }
 
 function MatchesSlider({ matches, onOpen }) {
