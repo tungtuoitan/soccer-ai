@@ -584,6 +584,8 @@ function AIDrawer({ open, onClose, context }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragStartHeight, setDragStartHeight] = useState(0);
+  const MINIMIZED_HEIGHT = 50; // Height when minimized
+  const MINIMIZED_WIDTH = 400; // Width when minimized
 
   // Auto-scroll messages
   useEffect(() => {
@@ -621,10 +623,10 @@ function AIDrawer({ open, onClose, context }) {
 
     const handleMouseMove = (e) => {
       const deltaY = dragStartY - e.clientY;
-      const newHeight = Math.max(65, Math.min(900, dragStartHeight + deltaY));
+      const newHeight = Math.max(MINIMIZED_HEIGHT, Math.min(900, dragStartHeight + deltaY));
       setHeight(newHeight);
       
-      if (newHeight <= 65) {
+      if (newHeight <= MINIMIZED_HEIGHT + 20) {
         setIsMinimized(true);
       } else {
         setIsMinimized(false);
@@ -655,7 +657,7 @@ function AIDrawer({ open, onClose, context }) {
   // Handle minimize
   const handleMinimize = () => {
     setIsMinimized(true);
-    setHeight(65);
+    setHeight(MINIMIZED_HEIGHT);
   };
 
   // Handle expand from minimized
@@ -664,8 +666,8 @@ function AIDrawer({ open, onClose, context }) {
     setHeight(isToggled ? 900 : 400);
   };
 
-  const width = isToggled ? 400 : 900;
-  const currentHeight = isMinimized ? 65 : height;
+  const width = isMinimized ? MINIMIZED_WIDTH : (isToggled ? 400 : 900);
+  const currentHeight = isMinimized ? MINIMIZED_HEIGHT : height;
 
   // Determine position class based on state
   const getPositionClass = () => {
@@ -699,7 +701,7 @@ function AIDrawer({ open, onClose, context }) {
       }}
       className={cn(
         "flex flex-col rounded-[2rem] border border-slate-200/50 overflow-hidden",
-        "bg-gradient-to-br from-slate-50/95 via-white/95 to-slate-100/95",
+        "bg-transparent",
         "backdrop-blur-xl shadow-2xl shadow-slate-900/10",
         getPositionClass()
       )}
@@ -785,47 +787,145 @@ function AIDrawer({ open, onClose, context }) {
 
       {/* Input area - always visible */}
       <div 
-        className="border-t border-slate-200/50 backdrop-blur flex items-center gap-2 shrink-0 relative overflow-hidden"
+        className={cn(
+          "border-t border-slate-200/50 backdrop-blur flex items-center gap-2 shrink-0 relative overflow-hidden",
+          isMinimized ? "px-0 py-0" : "px-0 py-0"
+        )}
         onClick={(e) => e.stopPropagation()}
+        style={{ height: isMinimized ? `${MINIMIZED_HEIGHT}px` : 'auto' }}
       >
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleAsk();
-            }
-          }}
-          onClick={(e) => {
-            if (isMinimized) {
-              e.stopPropagation();
-              handleExpand();
-            }
-          }}
-          onFocus={() => {
-            if (isMinimized) handleExpand();
-          }}
-          placeholder="Ask me anything..."
-          className="flex-1 rounded-xl bg-transparent border-0 px-6 py-5 text-base focus:outline-none placeholder:text-slate-600 transition-all relative z-10"
-
-        />
+        <div className="flex-1 relative group">
+          {/* Glass liquid background layer with multiple gradients */}
+          <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-white/25 via-purple-500/10 via-blue-500/10 to-transparent backdrop-blur-xl border border-white/40 transition-all duration-500 group-focus-within:bg-gradient-to-br group-focus-within:from-white/35 group-focus-within:via-pink-500/15 group-focus-within:via-purple-500/15 group-focus-within:to-blue-500/10 group-focus-within:border-white/60 group-focus-within:shadow-2xl group-focus-within:shadow-purple-500/30" 
+               style={{
+                 boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)'
+               }}
+          />
+          
+          {/* Liquid wave effect - animated continuously */}
+          <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden opacity-60">
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 via-purple-300/30 to-transparent"
+              style={{
+                animation: 'liquid-wave 4s ease-in-out infinite'
+              }}
+            />
+          </div>
+          
+          {/* Glass reflection shimmer - on focus */}
+          <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
+            <div 
+              className="absolute inset-0 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-white/50 to-transparent"
+              style={{
+                animation: 'glass-reflect 3s ease-in-out infinite'
+              }}
+            />
+          </div>
+          
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleAsk();
+              }
+            }}
+            onClick={(e) => {
+              if (isMinimized) {
+                e.stopPropagation();
+                handleExpand();
+              }
+            }}
+            onFocus={() => {
+              if (isMinimized) handleExpand();
+            }}
+            placeholder="Ask me anything..."
+            className={cn(
+              "w-full rounded-[1.5rem] bg-transparent focus:outline-none text-white placeholder:text-white/60 transition-all duration-300 relative z-10",
+              isMinimized 
+                ? "px-4 py-0 text-sm leading-[64px]" 
+                : "px-4 py-2.5 text-sm"
+            )}
+            style={{ height: isMinimized ? `${MINIMIZED_HEIGHT}px` : 'auto' }}
+          />
+          
+          {/* Idle animated gradient border - always visible when not focused */}
+          <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-pink-500 via-purple-500 via-blue-500 via-cyan-400 to-teal-400 opacity-0 group-focus-within:opacity-0 -z-10 blur-[2px] animate-idle-glow" 
+               style={{ 
+                 backgroundSize: '300% 100%',
+                 animation: input.trim() ? 'none' : 'gradient 3.5s ease infinite, pulse-glow-strong 4s ease-in-out infinite'
+               }} 
+          />
+          
+          {/* Focus animated gradient border */}
+          <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-fuchsia-500 via-violet-500 via-purple-500 via-indigo-500 to-blue-500 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-sm" 
+               style={{ 
+                 backgroundSize: '300% 100%',
+                 animation: 'gradient 3s ease infinite'
+               }} 
+          />
+        </div>
         {!isMinimized && (
           <button 
             onClick={() => handleAsk()} 
             disabled={!input.trim() || isLoading}
-            className="relative p-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden hover:scale-105 active:scale-95"
+            className="relative p-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden hover:scale-105 active:scale-95"
             title="Send message (Enter)"
+            style={{
+              animation: !input.trim() && !isLoading ? 'breathe 20s ease-in-out infinite' : 'none'
+            }}
           >
-            {isLoading ? (
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 7l10 10M7 17V7h10" />
-              </svg>
-            )}
+            {/* Shimmer effect - continuous when idle */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300/50 via-pink-300/50 to-transparent"
+              style={{
+                animation: !input.trim() && !isLoading 
+                  ? 'shimmer-continuous 5s ease-in-out infinite' 
+                  : 'none',
+                transform: 'translateX(-100%)'
+              }}
+            />
+            
+            {/* Hover shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/50 via-white/40 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+            
+            {/* Idle pulsing glow effect */}
+            <div 
+              className="absolute inset-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-violet-500 blur-lg -z-10"
+              style={{
+                animation: !input.trim() && !isLoading 
+                  ? 'pulse-glow-strong 4s ease-in-out infinite' 
+                  : 'none'
+              }}
+            />
+            
+            {/* Hover glow effect */}
+            <div className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-pink-400 to-purple-400 blur-md -z-10" />
+            
+            {/* Icon */}
+            <div className="relative z-10">
+              {isLoading ? (
+                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                </svg>
+              ) : (
+                <svg 
+                  className="w-4 h-4 group-hover/btn:rotate-[-10deg] transition-transform duration-300" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  style={{
+                    animation: !input.trim() ? 'float 3s ease-in-out infinite' : 'none'
+                  }}
+                >
+                  <path d="M7 7l10 10M7 17V7h10" />
+                </svg>
+              )}
+            </div>
           </button>
         )}
       </div>

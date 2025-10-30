@@ -31,7 +31,7 @@
 /* Use left + transform for smooth transitions between positions */
 .ai-drawer-center-expanded {
   left: 50% !important;
-  bottom: 20px !important;
+  bottom: 10px !important;
   right: auto !important;
   top: auto !important;
   transform: translateX(-50%) !important;
@@ -41,7 +41,7 @@
 
 .ai-drawer-center-minimized {
   left: 50% !important;
-  bottom: 20px !important;
+  bottom: 10px !important;
   top: auto !important;
   right: auto !important;
   transform: translateX(-50%) !important;
@@ -52,7 +52,7 @@
 /* Right position: use calc with left to ensure smooth transition */
 .ai-drawer-right-expanded {
   left: calc(100vw - 420px) !important;
-  bottom: 20px !important;
+  bottom: 10px !important;
   right: auto !important;
   top: auto !important;
   transform: translateX(0) !important;
@@ -62,7 +62,7 @@
 
 .ai-drawer-right-minimized {
   left: calc(100vw - 420px) !important;
-  bottom: 20px !important;
+  bottom: 10px !important;
   right: auto !important;
   top: auto !important;
   transform: translateX(0) !important;
@@ -70,16 +70,27 @@
               transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Gradient animation for input border */
+/* Gradient animation for input border - Enhanced rainbow effect */
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    background-position: 50% 50%;
+    filter: hue-rotate(45deg);
   }
   50% {
     background-position: 100% 50%;
+    filter: hue-rotate(90deg);
+  }
+  75% {
+    background-position: 50% 50%;
+    filter: hue-rotate(45deg);
   }
   100% {
     background-position: 0% 50%;
+    filter: hue-rotate(0deg);
   }
 }
 
@@ -105,37 +116,62 @@
   }
 }
 
-/* Continuous shimmer for idle state */
+/* Continuous shimmer for idle state with rainbow effect */
 @keyframes shimmer-continuous {
   0%, 100% {
     transform: translateX(-100%);
-    opacity: 0.3;
+    opacity: 0.4;
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: translateX(-25%);
+    opacity: 0.7;
+    filter: hue-rotate(90deg);
   }
   50% {
-    transform: translateX(100%);
+    transform: translateX(50%);
     opacity: 1;
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    transform: translateX(75%);
+    opacity: 0.7;
+    filter: hue-rotate(270deg);
   }
 }
 
-/* Strong pulse for glow effects */
+/* Strong pulse for glow effects with color shift */
 @keyframes pulse-glow-strong {
   0%, 100% {
-    opacity: 0.5;
+    opacity: 0.6;
     transform: scale(1);
+    filter: hue-rotate(0deg) brightness(1);
   }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.05);
+  33% {
+    opacity: 0.95;
+    transform: scale(1.06);
+    filter: hue-rotate(30deg) brightness(1.15);
+  }
+  66% {
+    opacity: 0.8;
+    transform: scale(1.03);
+    filter: hue-rotate(-20deg) brightness(1.1);
   }
 }
 
-/* Idle glow animation */
+/* Idle glow animation with rainbow shift */
 @keyframes idle-glow {
   0%, 100% {
-    opacity: 0.5;
+    opacity: 0.6;
+    filter: hue-rotate(0deg) saturate(1.2);
   }
-  50% {
-    opacity: 0.8;
+  33% {
+    opacity: 0.9;
+    filter: hue-rotate(60deg) saturate(1.5);
+  }
+  66% {
+    opacity: 0.75;
+    filter: hue-rotate(-30deg) saturate(1.3);
   }
 }
 
@@ -158,5 +194,37 @@
   }
   50% {
     transform: translateY(-3px);
+  }
+}
+
+/* Liquid wave animation for glass effect */
+@keyframes liquid-wave {
+  0%, 100% {
+    transform: translateX(-100%) translateY(0) skewX(0deg);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateX(-50%) translateY(-2px) skewX(5deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(0%) translateY(-4px) skewX(-5deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateX(50%) translateY(-2px) skewX(5deg);
+    opacity: 0.5;
+  }
+}
+
+/* Glass reflection animation */
+@keyframes glass-reflect {
+  0%, 100% {
+    transform: translateX(-200%) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(200%) rotate(-45deg);
+    opacity: 0.8;
   }
 }
