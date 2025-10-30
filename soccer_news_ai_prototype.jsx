@@ -584,8 +584,10 @@ function AIDrawer({ open, onClose, context }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragStartHeight, setDragStartHeight] = useState(0);
-  const MINIMIZED_HEIGHT = 50; // Height when minimized
+  const MINIMIZED_HEIGHT = 50; // Content height when minimized (excluding 2px border each side = 59px total)
   const MINIMIZED_WIDTH = 400; // Width when minimized
+  const BORDER_WIDTH = 2; // Border thickness on each side
+  const TOTAL_MINIMIZED_HEIGHT = MINIMIZED_HEIGHT + (BORDER_WIDTH * 2); // Total height including borders
 
   // Auto-scroll messages
   useEffect(() => {
@@ -678,7 +680,11 @@ function AIDrawer({ open, onClose, context }) {
   };
 
   return (
+    // ===== LEVEL 1: AI DRAWER ROOT CONTAINER =====
     <motion.div
+      id="ai-drawer-root"
+      data-name="AI Drawer Root Container"
+      data-level="1"
       layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ 
@@ -691,6 +697,8 @@ function AIDrawer({ open, onClose, context }) {
         cursor: isMinimized ? "pointer" : "default",
         position: "fixed",
         zIndex: 50,
+        border: "2px solid white",
+        height: isMinimized ? `${MINIMIZED_HEIGHT}px` : `${currentHeight}px`
       }}
       transition={{ 
         layout: { type: "spring", stiffness: 300, damping: 30 },
@@ -700,18 +708,21 @@ function AIDrawer({ open, onClose, context }) {
         scale: { duration: 0.2 }
       }}
       className={cn(
-        "flex flex-col rounded-[2rem] border border-slate-200/50 overflow-hidden",
-        "bg-transparent",
-        "backdrop-blur-xl shadow-2xl shadow-slate-900/10",
+        "flex flex-col rounded-[2rem] overflow-hidden",
+        "bg-gradient-to-br from-slate-50/95 via-white/95 to-slate-100/95",
+        "backdrop-blur-xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)]",
         getPositionClass()
       )}
       onClick={() => {
         if (isMinimized) handleExpand();
       }}
     >
-      {/* Resize handle at top */}
+      {/* ===== LEVEL 2: RESIZE HANDLE (Top) ===== */}
       {!isMinimized && (
         <div
+          id="ai-drawer-resize-handle"
+          data-name="Resize Handle Area"
+          data-level="2"
           onMouseDown={handleMouseDown}
           onDoubleClick={(e) => {
             e.stopPropagation();
@@ -721,13 +732,21 @@ function AIDrawer({ open, onClose, context }) {
           style={{ touchAction: "none" }}
           title="Drag to resize, double-click to minimize"
         >
-          <div className="w-10 h-1 bg-slate-400/40 rounded-full hover:bg-slate-400/60 transition-colors" />
+          {/* ===== LEVEL 3: RESIZE HANDLE INDICATOR ===== */}
+          <div 
+            data-name="Resize Handle Visual Indicator"
+            data-level="3"
+            className="w-10 h-1 bg-slate-400/40 rounded-full hover:bg-slate-400/60 transition-colors" 
+          />
         </div>
       )}
 
-      {/* Minimal header for minimize functionality - Hidden when minimized */}
+      {/* ===== LEVEL 2: HEADER AREA (with Toggle Button) ===== */}
       {!isMinimized && (
         <div 
+          id="ai-drawer-header"
+          data-name="Header Area Container"
+          data-level="2"
           className="relative h-[1px] bg-transparent shrink-0 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
@@ -735,8 +754,11 @@ function AIDrawer({ open, onClose, context }) {
           }}
           title="Click to minimize"
         >
-          {/* Toggle button - positioned absolute at top right corner */}
+          {/* ===== LEVEL 3: TOGGLE POSITION BUTTON ===== */}
           <button
+            id="ai-drawer-toggle-button"
+            data-name="Toggle Position Button"
+            data-level="3"
             onClick={(e) => {
               e.stopPropagation();
               handleToggle();
@@ -751,27 +773,41 @@ function AIDrawer({ open, onClose, context }) {
         </div>
       )}
 
-      {/* Content area - only show when not minimized */}
+      {/* ===== LEVEL 2: MESSAGES CONTENT AREA ===== */}
       {!isMinimized && (
         <div 
+          id="ai-drawer-messages-area"
+          data-name="Messages Content Area"
+          data-level="2"
           ref={listRef} 
           className="flex-1 overflow-y-auto px-4 py-3 space-y-2 apple-scrollbars"
           style={{ minHeight: "100px" }}
         >
           {messages.length === 0 ? (
-            <div className="text-sm text-slate-400 text-center py-12">
+            // ===== LEVEL 3: EMPTY STATE PLACEHOLDER =====
+            <div 
+              id="ai-drawer-empty-state"
+              data-name="Empty State Placeholder"
+              data-level="3"
+              className="text-sm text-slate-400 text-center py-12"
+            >
               <div className="text-3xl mb-2">✨</div>
               <div className="font-medium">Start a conversation</div>
               <div className="text-xs mt-1 text-slate-300">Ask me anything about football</div>
             </div>
           ) : (
             messages.map((m, i) => (
+              // ===== LEVEL 3: MESSAGE BUBBLE =====
               <div 
-                key={i} 
+                key={i}
+                id={`ai-message-${i}`}
+                data-name={`Message Bubble ${m.role === "user" ? "User" : "AI"}`}
+                data-level="3"
+                data-role={m.role}
                 className={cn(
                   "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm",
                   m.role === "user" 
-                    ? "ml-auto bg-gradient-to-br from-sky-500 to-sky-600 text-white" 
+                    ? "ml-auto bg-slate-200/90 text-gray-600" 
                     : "bg-white/80 backdrop-blur text-slate-800 border border-slate-200/50"
                 )}
               >
@@ -780,49 +816,46 @@ function AIDrawer({ open, onClose, context }) {
             ))
           )}
           {isLoading && (
-            <div className="text-xs text-slate-400 italic">AI is thinking...</div>
+            // ===== LEVEL 3: LOADING INDICATOR =====
+            <div 
+              id="ai-drawer-loading"
+              data-name="Loading Indicator"
+              data-level="3"
+              className="text-xs text-slate-400 italic"
+            >
+              AI is thinking...
+            </div>
           )}
         </div>
       )}
 
-      {/* Input area - always visible */}
+      {/* ===== LEVEL 2: INPUT CONTAINER (Footer) - Always visible ===== */}
       <div 
+        id="ai-drawer-footer"
+        data-name="Input Container Footer"
+        data-level="2"
         className={cn(
-          "border-t border-slate-200/50 backdrop-blur flex items-center gap-2 shrink-0 relative overflow-hidden",
-          isMinimized ? "px-0 py-0" : "px-0 py-0"
+          "border-slate-200/50 backdrop-blur flex items-center gap-2 shrink-0 relative overflow-hidden",
+          isMinimized ? "px-0 py-0 h-full" : "px-0 py-0 pt-1 border-t"
         )}
         onClick={(e) => e.stopPropagation()}
-        style={{ height: isMinimized ? `${MINIMIZED_HEIGHT}px` : 'auto' }}
+        style={{ height: isMinimized ? '100%' : 'auto' }}
       >
-        <div className="flex-1 relative group">
-          {/* Glass liquid background layer with multiple gradients */}
-          <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-white/25 via-purple-500/10 via-blue-500/10 to-transparent backdrop-blur-xl border border-white/40 transition-all duration-500 group-focus-within:bg-gradient-to-br group-focus-within:from-white/35 group-focus-within:via-pink-500/15 group-focus-within:via-purple-500/15 group-focus-within:to-blue-500/10 group-focus-within:border-white/60 group-focus-within:shadow-2xl group-focus-within:shadow-purple-500/30" 
-               style={{
-                 boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)'
-               }}
-          />
-          
-          {/* Liquid wave effect - animated continuously */}
-          <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden opacity-60">
-            <div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 via-purple-300/30 to-transparent"
-              style={{
-                animation: 'liquid-wave 4s ease-in-out infinite'
-              }}
-            />
-          </div>
-          
-          {/* Glass reflection shimmer - on focus */}
-          <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
-            <div 
-              className="absolute inset-0 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-white/50 to-transparent"
-              style={{
-                animation: 'glass-reflect 3s ease-in-out infinite'
-              }}
-            />
-          </div>
-          
+        {/* ===== LEVEL 3: INPUT WRAPPER with animated gradient borders ===== */}
+        <div 
+          id="ai-input-wrapper"
+          data-name="Input Field Wrapper"
+          data-level="3"
+          className={cn("flex-1 relative group", isMinimized ? "h-full" : "")}
+          style={{ marginRight: isMinimized ? '0' : '56px', height: isMinimized ? '100%' : 'auto' }}
+        >
+          {/* ===== LEVEL 4: MAIN INPUT FIELD ===== */}
           <input
+            id="ai-chat-input"
+            name="ai-chat-input"
+            data-name="AI Chat Input Field"
+            data-level="4"
+            aria-label="AI Chat Input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -842,66 +875,130 @@ function AIDrawer({ open, onClose, context }) {
             }}
             placeholder="Ask me anything..."
             className={cn(
-              "w-full rounded-[1.5rem] bg-transparent focus:outline-none text-white placeholder:text-white/60 transition-all duration-300 relative z-10",
+              "w-full rounded-[1.5rem] bg-transparent focus:outline-none placeholder:text-white transition-all duration-300 text-white",
               isMinimized 
-                ? "px-4 py-0 text-sm leading-[64px]" 
-                : "px-4 py-2.5 text-sm"
+                ? "px-6 py-0 text-base h-full" 
+                : "px-6 py-2.5 text-base focus:ring-2 focus:ring-sky-400/30 focus:shadow-lg focus:shadow-sky-500/10"
             )}
-            style={{ height: isMinimized ? `${MINIMIZED_HEIGHT}px` : 'auto' }}
+            style={{ 
+              height: isMinimized ? '100%' : 'auto',
+              lineHeight: isMinimized ? 'normal' : 'normal',
+              paddingTop: isMinimized ? '0' : undefined,
+              paddingBottom: isMinimized ? '0' : undefined,
+              display: 'flex',
+              alignItems: 'center'
+            }}
           />
           
-          {/* Idle animated gradient border - always visible when not focused */}
-          <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-pink-500 via-purple-500 via-blue-500 via-cyan-400 to-teal-400 opacity-0 group-focus-within:opacity-0 -z-10 blur-[2px] animate-idle-glow" 
+          {/* ===== LEVEL 4: IDLE STATE - Animated gradient border ===== */}
+          <div 
+            id="ai-input-idle-gradient"
+            data-name="Input Idle Gradient Border"
+            data-level="4"
+            className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-sky-500 via-blue-500 via-sky-600 via-blue-600 via-indigo-500/40 to-sky-500 opacity-100 group-focus-within:opacity-0 -z-10 blur-[2px] animate-idle-glow" 
                style={{ 
                  backgroundSize: '300% 100%',
-                 animation: input.trim() ? 'none' : 'gradient 3.5s ease infinite, pulse-glow-strong 4s ease-in-out infinite'
+                 animation: 'gradient 3.5s ease infinite'
                }} 
           />
           
-          {/* Focus animated gradient border */}
-          <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-fuchsia-500 via-violet-500 via-purple-500 via-indigo-500 to-blue-500 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-sm" 
+          {/* ===== LEVEL 4: IDLE STATE - Shimmer effect (chói gương) ===== */}
+          <div 
+            id="ai-input-idle-shimmer"
+            data-name="Input Idle Shimmer Effect"
+            data-level="4"
+            className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-100 group-focus-within:opacity-0 -z-10"
+            style={{ 
+              backgroundSize: '200% 100%',
+              animation: 'shimmer-continuous 6s ease-in-out infinite'
+            }} 
+          />
+          
+          {/* ===== LEVEL 4: FOCUS STATE - Animated gradient border ===== */}
+          <div 
+            id="ai-input-focus-gradient"
+            data-name="Input Focus Gradient Border"
+            data-level="4"
+            className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-sky-400 via-blue-500 via-sky-600 via-blue-600 via-indigo-500/30 to-sky-500 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-sm" 
                style={{ 
                  backgroundSize: '300% 100%',
-                 animation: 'gradient 3s ease infinite'
+                 animation: 'gradient 5s ease infinite'
                }} 
+          />
+          
+          {/* ===== LEVEL 4: FOCUS STATE - Shimmer effect ===== */}
+          <div 
+            id="ai-input-focus-shimmer"
+            data-name="Input Focus Shimmer Effect"
+            data-level="4"
+            className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-focus-within:opacity-100 -z-10"
+            style={{ 
+              backgroundSize: '200% 100%',
+              animation: 'shimmer-continuous 5s ease-in-out infinite'
+            }} 
           />
         </div>
+        
+        {/* ===== LEVEL 3: SEND BUTTON - Only visible when expanded ===== */}
         {!isMinimized && (
           <button 
+            id="ai-send-button"
+            data-name="Send Message Button"
+            data-level="3"
+            aria-label="Send message"
             onClick={() => handleAsk()} 
             disabled={!input.trim() || isLoading}
-            className="relative p-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden hover:scale-105 active:scale-95"
+            className="absolute right-[7px] w-10 h-10 bg-transparent text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden hover:scale-105 active:scale-95 flex items-center justify-center"
+            style={{ borderRadius: '12px 12px 17px 12px' }}
             title="Send message (Enter)"
-            style={{
-              animation: !input.trim() && !isLoading ? 'breathe 20s ease-in-out infinite' : 'none'
-            }}
           >
-            {/* Shimmer effect - continuous when idle */}
+            {/* ===== LEVEL 4: BUTTON IDLE STATE - Animated gradient border ===== */}
             <div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300/50 via-pink-300/50 to-transparent"
-              style={{
-                animation: !input.trim() && !isLoading 
-                  ? 'shimmer-continuous 5s ease-in-out infinite' 
-                  : 'none',
-                transform: 'translateX(-100%)'
-              }}
+              id="ai-button-idle-gradient"
+              data-name="Button Idle Gradient Border"
+              data-level="4"
+              className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 via-sky-600 via-blue-600 to-sky-500 opacity-100 group-hover/btn:opacity-0 -z-10 blur-[2px] animate-idle-glow" 
+                 style={{ 
+                   backgroundSize: '300% 100%',
+                   animation: 'gradient 3.5s ease infinite'
+                 }} 
             />
             
-            {/* Hover shimmer effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-300/50 via-white/40 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+            {/* ===== LEVEL 4: BUTTON IDLE STATE - Shimmer effect (commented out) ===== */}
+            {/* <div 
+              id="ai-button-idle-shimmer"
+              data-name="Button Idle Shimmer Effect"
+              data-level="4"
+              className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-100 group-hover/btn:opacity-0 -z-10"
+              style={{ 
+                backgroundSize: '200% 100%',
+                animation: 'shimmer-continuous 6s ease-in-out infinite'
+              }} 
+            /> */}
             
-            {/* Idle pulsing glow effect */}
+            {/* ===== LEVEL 4: BUTTON HOVER STATE - Animated gradient border ===== */}
             <div 
-              className="absolute inset-0 rounded-xl bg-gradient-to-r from-fuchsia-500 to-violet-500 blur-lg -z-10"
-              style={{
-                animation: !input.trim() && !isLoading 
-                  ? 'pulse-glow-strong 4s ease-in-out infinite' 
-                  : 'none'
-              }}
+              id="ai-button-hover-gradient"
+              data-name="Button Hover Gradient Border"
+              data-level="4"
+              className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400 via-blue-500 via-sky-600 via-blue-600 to-sky-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 -z-10 blur-sm" 
+                 style={{ 
+                   backgroundSize: '300% 100%',
+                   animation: 'gradient 5s ease infinite'
+                 }} 
             />
             
-            {/* Hover glow effect */}
-            <div className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-pink-400 to-purple-400 blur-md -z-10" />
+            {/* ===== LEVEL 4: BUTTON HOVER STATE - Shimmer effect ===== */}
+            <div
+              id="ai-button-hover-shimmer"
+              data-name="Button Hover Shimmer Effect"
+              data-level="4" 
+              className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover/btn:opacity-100 -z-10"
+              style={{ 
+                backgroundSize: '200% 100%',
+                animation: 'shimmer-continuous 5s ease-in-out infinite'
+              }} 
+            />
             
             {/* Icon */}
             <div className="relative z-10">
@@ -918,9 +1015,6 @@ function AIDrawer({ open, onClose, context }) {
                   strokeWidth="2.5" 
                   strokeLinecap="round" 
                   strokeLinejoin="round"
-                  style={{
-                    animation: !input.trim() ? 'float 3s ease-in-out infinite' : 'none'
-                  }}
                 >
                   <path d="M7 7l10 10M7 17V7h10" />
                 </svg>
