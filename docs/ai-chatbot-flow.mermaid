@@ -1,0 +1,67 @@
+%% AI CHATBOT FLOW - CHI TIẾT
+
+graph TB
+    Start([User Input: Tiếng Việt]) --> A{Intent Classification}
+    
+    A -->|DB Query| B[Text-to-SQL]
+    A -->|News/Realtime| C[Web Search]
+    A -->|General Chat| D[Direct Response]
+    
+    B --> B1[Parse Vietnamese Query]
+    B1 --> B2[Generate SQL]
+    B2 --> B3[Validate SQL]
+    B3 --> B4{SQL Valid?}
+    
+    B4 -->|Yes| B5[Execute Query]
+    B4 -->|No| B6[Retry with Better Prompt]
+    B6 --> B2
+    
+    B5 --> B7[Format Results]
+    
+    C --> C1[Google Search API]
+    C1 --> C2[Extract Top Results]
+    C2 --> C3[Fetch Full Content]
+    
+    D --> D1[Use Claude Direct]
+    
+    B7 --> E[Context Builder]
+    C3 --> E
+    D1 --> E
+    
+    E --> E1[Combine Data Sources]
+    E1 --> E2[Add Chat History]
+    E2 --> E3[Build Prompt]
+    
+    E3 --> F[Claude API]
+    F --> F1[Generate Response]
+    F1 --> F2[Format in Vietnamese]
+    F2 --> F3[Add Citations]
+    
+    F3 --> G[Save to chat_history]
+    G --> H([Return to User])
+    
+    %% Examples on side
+    subgraph "Example Queries"
+        Ex1["MU thắng mấy trận?"]
+        Ex2["Tin tức mới nhất về Ronaldo?"]
+        Ex3["So sánh Haaland vs Mbappe"]
+    end
+    
+    Ex1 -.DB Query.-> B
+    Ex2 -.Web Search.-> C
+    Ex3 -.Hybrid: DB + Web.-> B
+    Ex3 -.-> C
+    
+    %% Styling
+    classDef intent fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef db fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#000
+    classDef web fill:#ffe66d,stroke:#333,stroke-width:2px,color:#000
+    classDef ai fill:#a8e6cf,stroke:#333,stroke-width:2px,color:#000
+    classDef example fill:#dfe6e9,stroke:#333,stroke-width:1px,color:#000
+    
+    class A intent
+    class B,B1,B2,B3,B4,B5,B6,B7 db
+    class C,C1,C2,C3 web
+    class D,D1,E,E1,E2,E3,F,F1,F2,F3 ai
+    class Ex1,Ex2,Ex3 example
+

@@ -1,0 +1,122 @@
+%% KIẾN TRÚC TỔNG THỂ - WEBSITE BÓNG ĐÁ VỚI AI CHATBOT
+
+graph TB
+    subgraph "FRONTEND - React"
+        A[Homepage] --> A1[Live Scores Widget]
+        A --> A2[News Feed]
+        A --> A3[Fixtures Calendar]
+        A --> A4[AI Chatbot Widget]
+        
+        B[Match Details Page]
+        C[Team Profile Page]
+        D[Player Stats Page]
+        E[Standings Page]
+        F[Community Feed]
+        
+        G[Admin Dashboard]
+        G --> G1[Content Management]
+        G --> G2[User Management]
+        G --> G3[Analytics]
+    end
+    
+    subgraph "BACKEND - Node.js/Express"
+        H[API Gateway] --> H1[Auth Middleware]
+        H --> H2[Rate Limiting]
+        H --> H3[Caching Layer - Redis]
+        
+        I[Content Service]
+        I --> I1[Articles CRUD]
+        I --> I2[Comments System]
+        
+        J[Football Service]
+        J --> J1[Match Data]
+        J --> J2[Team Data]
+        J --> J3[Player Data]
+        J --> J4[Standings Data]
+        
+        K[AI Chatbot Service]
+        K --> K1[Intent Classifier]
+        K --> K2[Text-to-SQL Engine]
+        K --> K3[RAG System]
+        K --> K4[Response Generator]
+        
+        L[Social Service]
+        L --> L1[Facebook Scraper]
+        L --> L2[Post Aggregator]
+        
+        M[Data Sync Service]
+        M --> M1[CRON Jobs]
+        M --> M2[Webhooks Handler]
+        M --> M3[Queue Worker - Bull]
+    end
+    
+    subgraph "DATABASE - PostgreSQL"
+        N[(Main Database)]
+        N --> N1[leagues]
+        N --> N2[teams]
+        N --> N3[players]
+        N --> N4[matches]
+        N --> N5[standings]
+        N --> N6[articles]
+        N --> N7[chat_history]
+        N --> N8[users]
+    end
+    
+    subgraph "EXTERNAL APIS"
+        O[API-Football RapidAPI]
+        P[Claude API Anthropic]
+        Q[Google Search API]
+        R[Facebook Scraper API]
+    end
+    
+    subgraph "INFRASTRUCTURE"
+        S[Replit Hosting]
+        T[Redis Cache]
+        U[File Storage]
+        V[WebSocket Server]
+    end
+    
+    %% Connections
+    A4 --> K
+    B --> J
+    C --> J
+    D --> J
+    E --> J
+    F --> L
+    G1 --> I
+    
+    K --> P
+    K --> Q
+    K --> N
+    K --> T
+    
+    M --> O
+    M --> N
+    M --> T
+    
+    J --> N
+    J --> T
+    I --> N
+    L --> R
+    L --> N
+    
+    H --> I
+    H --> J
+    H --> K
+    H --> L
+    
+    V --> A1
+    V --> M
+
+%% STYLING
+    classDef frontend fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef backend fill:#68a063,stroke:#333,stroke-width:2px,color:#fff
+    classDef database fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+    classDef external fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef infra fill:#ffd93d,stroke:#333,stroke-width:2px,color:#000
+    
+    class A,A1,A2,A3,A4,B,C,D,E,F,G,G1,G2,G3 frontend
+    class H,H1,H2,H3,I,I1,I2,J,J1,J2,J3,J4,K,K1,K2,K3,K4,L,L1,L2,M,M1,M2,M3 backend
+    class N,N1,N2,N3,N4,N5,N6,N7,N8 database
+    class O,P,Q,R external
+    class S,T,U,V infra

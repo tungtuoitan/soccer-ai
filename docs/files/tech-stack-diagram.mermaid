@@ -1,0 +1,140 @@
+%% TECH STACK - LAYER BY LAYER
+
+graph TB
+    subgraph "PRESENTATION LAYER"
+        A[React 18]
+        A --> A1[React Router - Routing]
+        A --> A2[TailwindCSS - Styling]
+        A --> A3[React Query - Data Fetching]
+        A --> A4[Socket.io Client - Real-time]
+        A --> A5[Axios - HTTP Client]
+        A --> A6[Recharts - Data Viz]
+    end
+    
+    subgraph "APPLICATION LAYER"
+        B[Node.js + Express]
+        B --> B1[Express Routes]
+        B --> B2[Middleware Stack]
+        B --> B3[Controllers]
+        B --> B4[Services Layer]
+        
+        B2 --> B2a[CORS]
+        B2 --> B2b[Auth JWT]
+        B2 --> B2c[Rate Limiter]
+        B2 --> B2d[Error Handler]
+        
+        B4 --> B4a[Football Service]
+        B4 --> B4b[AI Chatbot Service]
+        B4 --> B4c[Content Service]
+        B4 --> B4d[Data Sync Service]
+    end
+    
+    subgraph "AI & INTELLIGENCE"
+        C[Claude AI]
+        C --> C1[Text-to-SQL]
+        C --> C2[Response Generation]
+        C --> C3[Intent Classification]
+        
+        D[RAG System]
+        D --> D1[Context Builder]
+        D --> D2[Vector Search]
+        D --> D3[Citation Engine]
+    end
+    
+    subgraph "DATA LAYER"
+        E[(PostgreSQL)]
+        E --> E1[Prisma ORM]
+        E1 --> E1a[Schema Migrations]
+        E1 --> E1b[Query Builder]
+        E1 --> E1c[Type Safety]
+        
+        F[Redis Cache]
+        F --> F1[Session Store]
+        F --> F2[Query Cache]
+        F --> F3[Rate Limit Store]
+        F --> F4[Pub/Sub Channel]
+    end
+    
+    subgraph "BACKGROUND JOBS"
+        G[Bull Queue]
+        G --> G1[Data Sync Jobs]
+        G --> G2[Email Jobs]
+        G --> G3[Image Processing]
+        
+        H[Node-Cron]
+        H --> H1[Scheduled Tasks]
+        H --> H2[Cleanup Jobs]
+    end
+    
+    subgraph "EXTERNAL SERVICES"
+        I[API-Football]
+        I --> I1[Live Scores]
+        I --> I2[Fixtures]
+        I --> I3[Statistics]
+        
+        J[Google Search API]
+        J --> J1[News Search]
+        J --> J2[Real-time Info]
+        
+        K[Facebook Scraper]
+        K --> K1[Social Posts]
+        
+        L[Cloudinary]
+        L --> L1[Image Storage]
+        L --> L2[Image Transform]
+    end
+    
+    subgraph "REAL-TIME LAYER"
+        M[Socket.io Server]
+        M --> M1[Live Score Updates]
+        M --> M2[Chat Messages]
+        M --> M3[Notifications]
+    end
+    
+    subgraph "INFRASTRUCTURE"
+        N[Replit Hosting]
+        N --> N1[Auto-deploy]
+        N --> N2[Environment Vars]
+        N --> N3[Database Hosting]
+        
+        O[Monitoring]
+        O --> O1[Google Analytics]
+        O --> O2[Error Tracking]
+        O --> O3[Performance Monitoring]
+    end
+    
+    %% Connections
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+    B --> F
+    B --> G
+    B --> H
+    B --> I
+    B --> J
+    B --> K
+    B --> L
+    B --> M
+    M --> A
+    C --> E
+    D --> E
+    D --> F
+    G --> E
+    B --> N
+    B --> O
+    
+    %% Styling
+    classDef frontend fill:#61dafb,stroke:#333,stroke-width:2px
+    classDef backend fill:#68a063,stroke:#333,stroke-width:2px
+    classDef ai fill:#9b59b6,stroke:#333,stroke-width:2px
+    classDef data fill:#336791,stroke:#333,stroke-width:2px
+    classDef external fill:#e74c3c,stroke:#333,stroke-width:2px
+    classDef infra fill:#f39c12,stroke:#333,stroke-width:2px
+    
+    class A,A1,A2,A3,A4,A5,A6 frontend
+    class B,B1,B2,B3,B4,B2a,B2b,B2c,B2d,B4a,B4b,B4c,B4d backend
+    class C,C1,C2,C3,D,D1,D2,D3 ai
+    class E,E1,E1a,E1b,E1c,F,F1,F2,F3,F4 data
+    class I,I1,I2,I3,J,J1,J2,K,K1,L,L1,L2 external
+    class G,G1,G2,G3,H,H1,H2,M,M1,M2,M3,N,N1,N2,N3,O,O1,O2,O3 infra

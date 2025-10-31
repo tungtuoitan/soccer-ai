@@ -1,0 +1,67 @@
+%% DATA FLOW - TỪ API ĐỂN USER
+
+sequenceDiagram
+    participant API as API-Football
+    participant Sync as Data Sync Service
+    participant DB as PostgreSQL
+    participant Cache as Redis
+    participant Backend as Node.js API
+    participant WS as WebSocket
+    participant User as React Frontend
+    
+    Note over API,Sync: INITIAL SETUP (1 time)
+    Sync->>API: GET /leagues
+    API-->>Sync: Return leagues data
+    Sync->>DB: INSERT leagues
+    
+    Sync->>API: GET /teams
+    API-->>Sync: Return teams data
+    Sync->>DB: INSERT teams
+    
+    Sync->>API: GET /fixtures
+    API-->>Sync: Return fixtures
+    Sync->>DB: INSERT matches
+    
+    Note over Sync,DB: LIVE UPDATES (every 1 min)
+    
+    loop Every 1 minute
+        Sync->>API: GET /fixtures?live=all
+        API-->>Sync: Return live matches
+        Sync->>DB: UPDATE matches
+        Sync->>Cache: SET match:* (TTL 1min)
+        Sync->>WS: Broadcast updates
+        WS-->>User: Push score update
+    end
+    
+    Note over User,Backend: USER REQUEST FLOW
+    
+    User->>Backend: GET /api/matches/today
+    Backend->>Cache: Check cache
+    
+    alt Cache Hit
+        Cache-->>Backend: Return cached data
+    else Cache Miss
+        Backend->>DB: SELECT * FROM matches
+        DB-->>Backend: Return matches
+        Backend->>Cache: SET cache (TTL 5min)
+    end
+    
+    Backend-->>User: Return JSON response
+    
+    Note over User,Backend: AI CHATBOT QUERY
+    
+    User->>Backend: POST /api/chat<br/>"MU thắng mấy trận?"
+    Backend->>DB: Execute SQL query
+    DB-->>Backend: Return results
+    Backend->>Cache: Check recent searches
+    
+    alt Similar query in cache
+        Cache-->>Backend: Return cached AI response
+    else New query
+        Backend->>External: Claude API
+        External-->>Backend: AI response
+        Backend->>Cache: Cache response (TTL 1h)
+    end
+    
+    Backend->>DB: INSERT INTO chat_history
+    Backend-->>User: Return AI answer

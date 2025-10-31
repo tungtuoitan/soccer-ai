@@ -1,0 +1,45 @@
+%% GANTT CHART - PROJECT TIMELINE
+
+gantt
+    title Football AI Website - Project Timeline (10 Weeks)
+    dateFormat YYYY-MM-DD
+    
+    section Phase 1: Foundation
+    Project Setup & Config           :a1, 2025-01-01, 2d
+    Database Schema & Setup          :a2, after a1, 2d
+    API Integration Setup            :a3, after a2, 3d
+    Data Sync Service                :a4, after a3, 3d
+    Basic REST APIs                  :a5, after a4, 4d
+    
+    section Phase 2: Core Features
+    UI Components Development        :b1, after a5, 3d
+    Main Pages (Home, Match, Team)  :b2, after b1, 4d
+    Live Updates & WebSocket         :b3, after b2, 3d
+    Articles System                  :b4, after b3, 3d
+    Admin Dashboard                  :b5, after b4, 4d
+    
+    section Phase 3: AI Chatbot
+    Text-to-SQL Engine              :crit, c1, after b5, 3d
+    Query Validator & Testing        :crit, c2, after c1, 4d
+    RAG System Implementation        :crit, c3, after c2, 4d
+    Web Search Integration           :crit, c4, after c3, 2d
+    Chatbot UI Development           :crit, c5, after c4, 3d
+    AI Features Polish               :crit, c6, after c5, 4d
+    
+    section Phase 4: Advanced
+    Community Feed & Social          :d1, after c6, 3d
+    Additional Features              :d2, after d1, 4d
+    Performance Optimization         :d3, after d2, 3d
+    Security & Testing               :d4, after d3, 4d
+    
+    section Phase 5: Launch
+    Content & Data Population        :e1, after d4, 4d
+    SEO & Marketing Prep             :e2, after e1, 3d
+    Beta Testing                     :e3, after e2, 3d
+    Official Launch                  :milestone, e4, after e3, 1d
+    Post-Launch Support              :e5, after e4, 3d
+
+    section Continuous Tasks
+    Daily Data Sync Monitoring       :active, 2025-01-01, 70d
+    Bug Fixes & Improvements         :active, 2025-01-15, 55d
+    User Feedback Collection         :2025-02-15, 25d

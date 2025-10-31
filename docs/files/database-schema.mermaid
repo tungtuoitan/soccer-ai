@@ -1,0 +1,241 @@
+%% DATABASE SCHEMA - POSTGRESQL
+
+erDiagram
+    LEAGUES ||--o{ TEAMS : contains
+    LEAGUES ||--o{ SEASONS : has
+    LEAGUES ||--o{ MATCHES : hosts
+    
+    TEAMS ||--o{ PLAYERS : has
+    TEAMS ||--o{ MATCHES : "plays as home"
+    TEAMS ||--o{ MATCHES : "plays as away"
+    TEAMS ||--o{ STANDINGS : ranked
+    
+    MATCHES ||--o{ MATCH_EVENTS : contains
+    MATCHES ||--o{ LINEUPS : has
+    MATCHES ||--o{ MATCH_STATS : has
+    
+    PLAYERS ||--o{ MATCH_EVENTS : participates
+    PLAYERS ||--o{ LINEUPS : in
+    PLAYERS ||--o{ PLAYER_STATS : has
+    PLAYERS ||--o{ TRANSFERS : involved
+    PLAYERS ||--o{ INJURIES : suffers
+    
+    USERS ||--o{ ARTICLES : writes
+    USERS ||--o{ COMMENTS : posts
+    USERS ||--o{ CHAT_HISTORY : interacts
+    
+    ARTICLES ||--o{ COMMENTS : receives
+    
+    LEAGUES {
+        int id PK
+        string name
+        string country
+        string type
+        string logo_url
+        int season
+        timestamp created_at
+    }
+    
+    SEASONS {
+        int id PK
+        int league_id FK
+        int year
+        date start_date
+        date end_date
+        boolean is_current
+    }
+    
+    TEAMS {
+        int id PK
+        string name
+        string short_name
+        string code
+        string logo_url
+        string country
+        int founded
+        string stadium
+        int league_id FK
+        timestamp updated_at
+    }
+    
+    PLAYERS {
+        int id PK
+        string name
+        string full_name
+        date date_of_birth
+        string nationality
+        string position
+        int number
+        string photo_url
+        int height
+        int weight
+        int team_id FK
+        decimal value
+        date contract_until
+        timestamp updated_at
+    }
+    
+    MATCHES {
+        int id PK
+        int league_id FK
+        int season_id FK
+        int round
+        int home_team_id FK
+        int away_team_id FK
+        int home_score
+        int away_score
+        datetime match_date
+        string status
+        string venue
+        int attendance
+        timestamp updated_at
+    }
+    
+    MATCH_EVENTS {
+        int id PK
+        int match_id FK
+        int minute
+        int extra_time
+        string type
+        int player_id FK
+        int team_id FK
+        int assist_player_id FK
+        string detail
+        timestamp created_at
+    }
+    
+    LINEUPS {
+        int id PK
+        int match_id FK
+        int team_id FK
+        int player_id FK
+        string position
+        string formation
+        boolean is_starter
+        int shirt_number
+    }
+    
+    PLAYER_STATS {
+        int id PK
+        int match_id FK
+        int player_id FK
+        int goals
+        int assists
+        int shots
+        int passes
+        int tackles
+        int minutes_played
+        decimal rating
+    }
+    
+    MATCH_STATS {
+        int id PK
+        int match_id FK
+        int team_id FK
+        int possession
+        int shots
+        int shots_on_target
+        int corners
+        int fouls
+        int offsides
+        int yellow_cards
+        int red_cards
+    }
+    
+    STANDINGS {
+        int id PK
+        int league_id FK
+        int season_id FK
+        int team_id FK
+        int position
+        int played
+        int won
+        int drawn
+        int lost
+        int goals_for
+        int goals_against
+        int goal_difference
+        int points
+        string form
+        timestamp updated_at
+    }
+    
+    TRANSFERS {
+        int id PK
+        int player_id FK
+        int from_team_id FK
+        int to_team_id FK
+        decimal fee
+        date transfer_date
+        int contract_length
+        boolean is_loan
+    }
+    
+    INJURIES {
+        int id PK
+        int player_id FK
+        string type
+        string severity
+        date start_date
+        date expected_return
+        string status
+    }
+    
+    ARTICLES {
+        int id PK
+        string title
+        string slug
+        text content
+        text summary
+        string thumbnail
+        int author_id FK
+        string category
+        string tags
+        string source
+        boolean is_ai_generated
+        int views_count
+        timestamp published_at
+        timestamp updated_at
+    }
+    
+    COMMENTS {
+        int id PK
+        int article_id FK
+        int user_id FK
+        text content
+        int parent_comment_id FK
+        int likes
+        timestamp created_at
+    }
+    
+    USERS {
+        int id PK
+        string email
+        string password_hash
+        string name
+        string avatar
+        string role
+        timestamp created_at
+    }
+    
+    CHAT_HISTORY {
+        int id PK
+        int user_id FK
+        text question
+        text answer
+        text sql_query
+        json data_sources
+        int response_time_ms
+        timestamp created_at
+    }
+    
+    SOCIAL_POSTS {
+        int id PK
+        string platform
+        string post_url
+        text content
+        string author
+        int likes
+        int comments_count
+        timestamp fetched_at
+    }
