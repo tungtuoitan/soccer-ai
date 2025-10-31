@@ -589,6 +589,24 @@ function AIDrawer({ open, onClose, context }) {
   const BORDER_WIDTH = 2; // Border thickness on each side
   const TOTAL_MINIMIZED_HEIGHT = MINIMIZED_HEIGHT + (BORDER_WIDTH * 2); // Total height including borders
 
+  // Rotating placeholder
+  const placeholders = [
+    "Ask me anything",
+    "Hatrick for Ronaldo today",
+    "Live matches",
+    "Top scorers this season",
+    "Latest transfer news"
+  ];
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  // Change placeholder every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Auto-scroll messages
   useEffect(() => {
     if (!isMinimized) {
@@ -851,6 +869,7 @@ function AIDrawer({ open, onClose, context }) {
         >
           {/* ===== LEVEL 4: MAIN INPUT FIELD ===== */}
           <input
+            key={placeholderIndex}
             id="ai-chat-input"
             name="ai-chat-input"
             data-name="AI Chat Input Field"
@@ -873,9 +892,9 @@ function AIDrawer({ open, onClose, context }) {
             onFocus={() => {
               if (isMinimized) handleExpand();
             }}
-            placeholder="Ask me anything..."
+            placeholder={`${placeholders[placeholderIndex]}...`}
             className={cn(
-              "w-full rounded-[1.5rem] bg-transparent focus:outline-none placeholder:text-white transition-all duration-300 text-white",
+              "w-full rounded-[1.5rem] bg-transparent focus:outline-none placeholder:text-white placeholder:italic transition-all duration-500 text-white",
               isMinimized 
                 ? "px-6 py-0 text-base h-full" 
                 : "px-6 py-2.5 text-base focus:ring-2 focus:ring-sky-400/30 focus:shadow-lg focus:shadow-sky-500/10"
@@ -886,7 +905,8 @@ function AIDrawer({ open, onClose, context }) {
               paddingTop: isMinimized ? '0' : undefined,
               paddingBottom: isMinimized ? '0' : undefined,
               display: 'flex',
-              alignItems: 'center'
+              alignItems: 'center',
+              animation: 'placeholderFade 2s ease-in-out'
             }}
           />
           
@@ -1302,8 +1322,18 @@ export default function App() {
   }, [filter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/60">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+    <>
+      <style>{`
+        @keyframes placeholderFade {
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 0.4; }
+        }
+        .placeholder-animated::placeholder {
+          animation: placeholderFade 5s ease-in-out infinite;
+        }
+      `}</style>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50/60">
+        <Header activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="mx-auto max-w-6xl px-4 py-6">
         {activeTab === "home" && <HomePage filter={filter} setFilter={setFilter} filteredMatches={filteredMatches} openMatch={openMatch} openAIForArticle={openAIForArticle} />}
@@ -1311,9 +1341,10 @@ export default function App() {
         {activeTab === "community" && <CommunityPage posts={DUMMY_COMMUNITY} onOpenMatch={openMatch} />}
       </main>
 
-      <Bottom activeTab={activeTab} setActiveTab={setActiveTab} setAiContext={setAiContext} setAiOpen={setAiOpen} />
-      <AIDrawer open={aiOpen} onClose={() => setAiOpen(false)} context={aiContext} />
-    </div>
+        <Bottom activeTab={activeTab} setActiveTab={setActiveTab} setAiContext={setAiContext} setAiOpen={setAiOpen} />
+        <AIDrawer open={aiOpen} onClose={() => setAiOpen(false)} context={aiContext} />
+      </div>
+    </>
   );
 }
 
