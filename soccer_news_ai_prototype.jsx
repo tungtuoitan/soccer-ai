@@ -869,7 +869,7 @@ function AIDrawer({ open, onClose, context }) {
           data-name="Input Field Wrapper"
           data-level="3"
           className={cn("flex-1 relative group", isMinimized ? "h-full" : "")}
-          style={{ marginRight: isMinimized ? '0' : '46px', height: isMinimized ? '100%' : 'auto' }}
+          style={{ height: isMinimized ? '100%' : 'auto' }}
         >
           {/* ===== LEVEL 4: MAIN INPUT FIELD ===== */}
           <input
@@ -901,7 +901,7 @@ function AIDrawer({ open, onClose, context }) {
               "w-full rounded-[1.5rem] bg-transparent focus:outline-none placeholder:text-white placeholder:italic transition-all duration-500 text-white",
               isMinimized 
                 ? "px-6 py-0 text-base h-full" 
-                : "px-6 py-2.5 text-base focus:ring-2 focus:ring-sky-400/30 focus:shadow-lg focus:shadow-sky-500/10"
+                : "px-6 pr-14 py-2.5 text-base focus:ring-2 focus:ring-sky-400/30 focus:shadow-lg focus:shadow-sky-500/10"
             )}
             style={{ 
               height: isMinimized ? '100%' : 'auto',
@@ -961,80 +961,32 @@ function AIDrawer({ open, onClose, context }) {
               animation: 'shimmer-continuous 5s ease-in-out infinite'
             }} 
           />
-        </div>
-        
-        {/* ===== LEVEL 3: SEND BUTTON - Only visible when expanded ===== */}
-        {!isMinimized && (
-          <button 
-            id="ai-send-button"
-            data-name="Send Message Button"
-            data-level="3"
-            aria-label="Send message"
-            onClick={() => handleAsk()} 
-            disabled={!input.trim() || isLoading}
-            className="absolute right-[3px] w-10 h-10 bg-transparent text-white disabled:opacity-40 
-            disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden 
-            hover:scale-105 active:scale-95 flex items-center justify-center"
-            style={{ borderRadius: '14px 14px 17px 14px' }}
-            title="Send message (Enter)"
-          >
-            {/* ===== LEVEL 4: BUTTON IDLE STATE - Animated gradient border ===== */}
-            <div 
-              id="ai-button-idle-gradient"
-              data-name="Button Idle Gradient Border"
+          
+          {/* ===== LEVEL 4: SEND BUTTON - Inside input field, only visible when expanded ===== */}
+          {!isMinimized && (
+            <button 
+              id="ai-send-button"
+              data-name="Send Message Button"
               data-level="4"
-              className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 via-sky-600 via-blue-600 to-sky-500 opacity-100 group-hover/btn:opacity-0 -z-10 blur-[2px] animate-idle-glow" 
-                 style={{ 
-                   backgroundSize: '300% 100%',
-                   animation: 'gradient 3.5s ease infinite'
-                 }} 
-            />
-            
-            {/* ===== LEVEL 4: BUTTON IDLE STATE - Shimmer effect (commented out) ===== */}
-            {/* <div 
-              id="ai-button-idle-shimmer"
-              data-name="Button Idle Shimmer Effect"
-              data-level="4"
-              className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-100 group-hover/btn:opacity-0 -z-10"
-              style={{ 
-                backgroundSize: '200% 100%',
-                animation: 'shimmer-continuous 6s ease-in-out infinite'
+              aria-label="Send message"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAsk();
               }} 
-            /> */}
-            
-            {/* ===== LEVEL 4: BUTTON HOVER STATE - Animated gradient border ===== */}
-            <div 
-              id="ai-button-hover-gradient"
-              data-name="Button Hover Gradient Border"
-              data-level="4"
-              className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400 via-blue-500 via-sky-600 via-blue-600 to-sky-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 -z-10 blur-sm" 
-                 style={{ 
-                   backgroundSize: '300% 100%',
-                   animation: 'gradient 5s ease infinite'
-                 }} 
-            />
-            
-            {/* ===== LEVEL 4: BUTTON HOVER STATE - Shimmer effect ===== */}
-            <div
-              id="ai-button-hover-shimmer"
-              data-name="Button Hover Shimmer Effect"
-              data-level="4" 
-              className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover/btn:opacity-100 -z-10"
-              style={{ 
-                backgroundSize: '200% 100%',
-                animation: 'shimmer-continuous 5s ease-in-out infinite'
-              }} 
-            />
-            
-            {/* Icon */}
-            <div className="relative z-10">
+              disabled={!input.trim() || isLoading}
+              className="absolute right-[3px] top-1/2 -translate-y-1/2 w-9 h-9 bg-white text-slate-700 disabled:opacity-40 
+              disabled:cursor-not-allowed transition-all duration-300 rounded-full hover:scale-105 active:scale-95 flex 
+              items-center justify-center shadow-md hover:shadow-lg z-10"
+              title="Send message (Enter)"
+            >
+              {/* Icon */}
               {isLoading ? (
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                 </svg>
               ) : (
                 <svg 
-                  className="w-4 h-4 group-hover/btn:rotate-[-10deg] transition-transform duration-300" 
+                  className="w-4 h-4 hover:rotate-[-10deg] transition-transform duration-300" 
                   viewBox="0 0 24 24" 
                   fill="none" 
                   stroke="currentColor" 
@@ -1045,9 +997,9 @@ function AIDrawer({ open, onClose, context }) {
                   <path d="M7 7l10 10M7 17V7h10" />
                 </svg>
               )}
-            </div>
-          </button>
-        )}
+            </button>
+          )}
+        </div>
       </div>
     </motion.div>
   );
