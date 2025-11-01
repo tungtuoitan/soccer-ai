@@ -580,7 +580,7 @@ function AIDrawer({ open, onClose, context }) {
   // Drawer states
   const [isMinimized, setIsMinimized] = useState(true); // Start minimized
   const [isToggled, setIsToggled] = useState(false); // false = center, true = right
-  const [height, setHeight] = useState(400);
+  const [height, setHeight] = useState(300);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragStartHeight, setDragStartHeight] = useState(0);
@@ -621,7 +621,7 @@ function AIDrawer({ open, onClose, context }) {
     // Expand if minimized
     if (isMinimized) {
       setIsMinimized(false);
-      setHeight(isToggled ? 900 : 400);
+      setHeight(isToggled ? 900 : 200);
     }
     
     setMessages((m) => [...m, { role: "user", text: q }]);
@@ -670,7 +670,7 @@ function AIDrawer({ open, onClose, context }) {
   const handleToggle = () => {
     setIsToggled(!isToggled);
     if (!isMinimized) {
-      setHeight(!isToggled ? 900 : 400);
+      setHeight(!isToggled ? 900 : 300);
     }
   };
 
@@ -683,7 +683,7 @@ function AIDrawer({ open, onClose, context }) {
   // Handle expand from minimized
   const handleExpand = () => {
     setIsMinimized(false);
-    setHeight(isToggled ? 900 : 400);
+    setHeight(isToggled ? 900 : 300);
   };
 
   const width = isMinimized ? MINIMIZED_WIDTH : (isToggled ? 400 : 900);
@@ -798,7 +798,10 @@ function AIDrawer({ open, onClose, context }) {
           data-name="Messages Content Area"
           data-level="2"
           ref={listRef} 
-          className="flex-1 overflow-y-auto px-4 py-3 space-y-2 apple-scrollbars"
+          className={cn(
+            "flex-1 overflow-y-auto px-4 py-3 apple-scrollbars",
+            messages.length === 0 ? "flex items-center justify-center" : "space-y-2"
+          )}
           style={{ minHeight: "100px" }}
         >
           {messages.length === 0 ? (
@@ -807,7 +810,7 @@ function AIDrawer({ open, onClose, context }) {
               id="ai-drawer-empty-state"
               data-name="Empty State Placeholder"
               data-level="3"
-              className="text-sm text-slate-400 text-center py-12"
+              className="text-sm text-slate-400 text-center"
             >
               <div className="text-3xl mb-2">✨</div>
               <div className="font-medium">Start a conversation</div>
@@ -2029,7 +2032,7 @@ const TeamDisplay = ({ teamName, score, logoUrl, direction = "left" }) => {
             {...animationProps}
             className="flex flex-col items-center space-y-4 flex-1 max-w-xs relative"
         >
-            {/* Background logo at center of the "square" area - 15% opacity */}
+            {/* Background logo at center with gradient mask - full opacity at center, fading to edges */}
             <div 
                 className="absolute inset-0 flex items-center justify-center pointer-events-none"
                 style={{
@@ -2037,7 +2040,9 @@ const TeamDisplay = ({ teamName, score, logoUrl, direction = "left" }) => {
                     backgroundSize: '250px 250px',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    opacity: 0.03
+                    opacity: 0.05,
+                    maskImage: 'linear-gradient(180deg, transparent 0%, transparent 10%, black 35%, black 65%, transparent 90%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(180deg, transparent 0%, transparent 10%, black 35%, black 65%, transparent 90%, transparent 100%)'
                 }}
             />
             
@@ -2094,34 +2099,48 @@ const MatchHeroHeader = ({ match, onClose, onAskAI }) => {
             className="relative p-8 rounded-t-3xl" 
             style={{ 
                 background: `linear-gradient(180deg,
-                    color-mix(in srgb, #002d72, 20% rgb(16, 16, 16)) 0%,
-                    color-mix(in srgb, #002d72, 20% rgb(16, 16, 16)) 10%,
-                    #002d72 50%,
-                    color-mix(in srgb, #002d72, 20% rgb(16, 16, 16)) 90%,
-                    color-mix(in srgb, #002d72, 20% rgb(16, 16, 16)) 100%)`,
+                    rgba(0, 27, 69, 1) 0%,
+                    #002C71 50%,
+                    rgba(0, 27, 69, 1) 100%)`,
                 height: '300px'
             }}
         >
             {/* Close Button */}
             <button 
                 onClick={onClose} 
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all hover:scale-110"
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-transparent hover:bg-white/30 backdrop-blur-sm text-white flex items-center justify-center transition-all hover:scale-110"
             >
                 ✕
             </button>
 
-            {/* League Info */}
-            <div className="text-center mb-[-40px]">
-                <div className="inline-block px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-semibold">
-                    {match.league} · {match.venue}
+            {/* League Info - Top Left */}
+            <div className="absolute top-6 left-6 text-white text-sm font-normal">
+                {match.league}
+            </div>
+
+            {/* Season & Round - Top Right */}
+            <div className="absolute top-6 right-16 flex gap-3 text-white text-sm font-normal">
+                <span>Season 2025</span>
+                <span>·</span>
+                <span>Round 10</span>
+            </div>
+
+            {/* Stadium Badge - Always Centered */}
+            <div className="absolute top-6 left-0 right-0 flex justify-center">
+                <div className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-semibold">
+                    Stadium: {match.venue}
                 </div>
-                <div className="text-white/80 text-xs mt-2">
+            </div>
+
+            {/* Kickoff time below stadium - moved up */}
+            <div className="text-center mb-[-30px] mt-10">
+                <div className="text-white/80 text-xs">
                     Kickoff: {new Date(match.kickoff).toLocaleString()}
                 </div>
             </div>
 
             {/* Teams & Score - Epic VS Layout */}
-            <div className="flex items-center justify-center gap-8 md:gap-16 mt-[-60px]">
+            <div className="flex items-center justify-center gap-8 md:gap-16 mt-[-50px]">
                 <TeamDisplay 
                     teamName={match.home.name}
                     score={match.home.score}
@@ -2129,10 +2148,27 @@ const MatchHeroHeader = ({ match, onClose, onAskAI }) => {
                     direction="left"
                 />
                 
-                <MatchScore 
-                    homeScore={match.home.score}
-                    awayScore={match.away.score}
-                />
+                <div className="flex flex-col items-center">
+                    <MatchScore 
+                        homeScore={match.home.score}
+                        awayScore={match.away.score}
+                    />
+                    
+                    {/* Goal Scorers and Red Cards below score */}
+                    <div className="flex gap-8 mt-4 text-white/90 text-xs">
+                        {/* Home team events */}
+                        <div className="text-right space-y-1">
+                            <div>⚽ Messi 23', 67'</div>
+                            <div>⚽ Pedri 45'</div>
+                        </div>
+                        
+                        {/* Away team events */}
+                        <div className="text-left space-y-1">
+                            <div>⚽ Vinicius 34'</div>
+                            <div>🟥 Ramos 78'</div>
+                        </div>
+                    </div>
+                </div>
                 
                 <TeamDisplay 
                     teamName={match.away.name}
