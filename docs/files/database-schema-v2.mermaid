@@ -1,0 +1,445 @@
+%% DATABASE SCHEMA V2 - IMPROVED & PRODUCTION-READY
+%% Changes from v1:
+%% - Removed 'season' from LEAGUES (redundant with SEASONS table)
+%% - Added COACHES table
+%% - Added PLAYER_SEASON_STATS for aggregated statistics
+%% - Added related entity fields to ARTICLES
+%% - Added feedback/rating to CHAT_HISTORY
+%% - Added USER_PREFERENCES for personalization
+%% - Added content moderation fields
+%% - Added GDPR compliance fields
+%% - Added AUDIT_LOGS for change tracking
+%% - Added CONTENT_REPORTS for moderation
+%% - Improved SOCIAL_POSTS with relationships
+
+erDiagram
+    %% Core Football Entities
+    LEAGUES ||--o{ SEASONS : has
+    LEAGUES ||--o{ TEAMS : contains
+    LEAGUES ||--o{ MATCHES : hosts
+    LEAGUES ||--o{ STANDINGS : tracks
+    
+    SEASONS ||--o{ MATCHES : contains
+    SEASONS ||--o{ STANDINGS : tracks
+    SEASONS ||--o{ PLAYER_SEASON_STATS : aggregates
+    
+    TEAMS ||--o{ PLAYERS : has
+    TEAMS ||--o{ COACHES : employs
+    TEAMS ||--o{ MATCHES : "plays as home"
+    TEAMS ||--o{ MATCHES : "plays as away"
+    TEAMS ||--o{ STANDINGS : ranked
+    
+    PLAYERS ||--o{ MATCH_EVENTS : participates
+    PLAYERS ||--o{ LINEUPS : in
+    PLAYERS ||--o{ PLAYER_STATS : has
+    PLAYERS ||--o{ PLAYER_SEASON_STATS : summarizes
+    PLAYERS ||--o{ TRANSFERS : involved
+    PLAYERS ||--o{ INJURIES : suffers
+    
+    COACHES ||--o{ COACH_HISTORY : "career at"
+    
+    MATCHES ||--o{ MATCH_EVENTS : contains
+    MATCHES ||--o{ LINEUPS : has
+    MATCHES ||--o{ MATCH_STATS : has
+    MATCHES ||--o{ PLAYER_STATS : generates
+    
+    %% Content & Community
+    USERS ||--o{ ARTICLES : writes
+    USERS ||--o{ COMMENTS : posts
+    USERS ||--o{ CHAT_HISTORY : interacts
+    USERS ||--o{ USER_PREFERENCES : configures
+    USERS ||--o{ CONTENT_REPORTS : submits
+    
+    ARTICLES ||--o{ COMMENTS : receives
+    ARTICLES }o--|| MATCHES : "related to"
+    ARTICLES }o--|| TEAMS : "related to"
+    ARTICLES }o--|| PLAYERS : "related to"
+    ARTICLES }o--|| COACHES : "related to"
+    
+    COMMENTS ||--o{ CONTENT_REPORTS : "may have"
+    CHAT_HISTORY ||--o{ CONTENT_REPORTS : "may have"
+    
+    SOCIAL_POSTS }o--|| MATCHES : "about"
+    SOCIAL_POSTS }o--|| TEAMS : "about"
+    SOCIAL_POSTS }o--|| PLAYERS : "about"
+    
+    %% Audit
+    AUDIT_LOGS }o--|| USERS : "performed by"
+    
+    %% ================================================================
+    %% TABLE DEFINITIONS
+    %% ================================================================
+    
+    LEAGUES {
+        int id PK
+        string name "e.g. Premier League"
+        string country
+        string type "league, cup, friendly"
+        string logo_url
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    SEASONS {
+        int id PK
+        int league_id FK
+        int year "e.g. 2025"
+        date start_date
+        date end_date
+        boolean is_current
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    TEAMS {
+        int id PK
+        string name
+        string short_name
+        string code "Unique identifier"
+        string logo_url
+        string country
+        int founded
+        string stadium
+        int stadium_capacity
+        string stadium_city
+        int league_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    COACHES {
+        int id PK
+        string name
+        string full_name
+        date date_of_birth
+        string nationality
+        string photo_url
+        int current_team_id FK "nullable"
+        date appointed_date
+        date contract_until
+        json career_stats "Flexible stats storage"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    COACH_HISTORY {
+        int id PK
+        int coach_id FK
+        int team_id FK
+        date start_date
+        date end_date "nullable if current"
+        string departure_reason "resigned, fired, contract_end"
+        int matches_managed
+        int wins
+        int draws
+        int losses
+    }
+    
+    PLAYERS {
+        int id PK
+        string name
+        string full_name
+        int birth_year "GDPR: Only year, not full date"
+        string nationality
+        string position
+        int number
+        string photo_url
+        int height
+        int weight
+        int team_id FK
+        decimal market_value
+        date contract_until
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    MATCHES {
+        int id PK
+        int league_id FK
+        int season_id FK
+        int round
+        int home_team_id FK
+        int away_team_id FK
+        int home_score
+        int away_score
+        datetime match_date
+        string status "scheduled, live, finished, postponed, cancelled"
+        string venue
+        int attendance
+        int referee_id FK "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    MATCH_EVENTS {
+        int id PK
+        int match_id FK
+        int minute
+        int extra_time
+        string type "goal, card, substitution, var, penalty"
+        int player_id FK
+        int team_id FK
+        int assist_player_id FK "nullable"
+        int substitution_player_out_id FK "nullable"
+        string detail "Additional context"
+        timestamp created_at
+    }
+    
+    LINEUPS {
+        int id PK
+        int match_id FK
+        int team_id FK
+        int player_id FK
+        string position "GK, DF, MF, FW"
+        string formation "e.g. 4-3-3"
+        boolean is_starter
+        int shirt_number
+        int substitution_minute "nullable"
+    }
+    
+    PLAYER_STATS {
+        int id PK
+        int match_id FK
+        int player_id FK
+        int goals
+        int assists
+        int shots
+        int shots_on_target
+        int passes
+        int passes_accurate
+        int tackles
+        int interceptions
+        int fouls_committed
+        int fouls_drawn
+        int minutes_played
+        decimal rating
+        timestamp created_at
+    }
+    
+    PLAYER_SEASON_STATS {
+        int id PK
+        int player_id FK
+        int season_id FK
+        int team_id FK
+        int matches_played
+        int minutes_played
+        int goals
+        int assists
+        int yellow_cards
+        int red_cards
+        decimal avg_rating
+        int shots_total
+        int shots_on_target
+        int passes_total
+        int passes_accurate
+        decimal pass_accuracy
+        timestamp last_updated
+    }
+    
+    MATCH_STATS {
+        int id PK
+        int match_id FK
+        int team_id FK
+        int possession
+        int shots
+        int shots_on_target
+        int corners
+        int fouls
+        int offsides
+        int yellow_cards
+        int red_cards
+        int saves
+        int passes
+        int passes_accurate
+    }
+    
+    STANDINGS {
+        int id PK
+        int league_id FK
+        int season_id FK
+        int team_id FK
+        int position
+        int played
+        int won
+        int drawn
+        int lost
+        int goals_for
+        int goals_against
+        int goal_difference
+        int points
+        string form "Last 5 matches: WWDLL"
+        timestamp updated_at
+    }
+    
+    TRANSFERS {
+        int id PK
+        int player_id FK
+        int from_team_id FK "nullable"
+        int to_team_id FK "nullable"
+        decimal fee "Transfer fee in millions"
+        date transfer_date
+        int contract_length "Years"
+        boolean is_loan
+        string transfer_type "permanent, loan, free"
+        timestamp created_at
+    }
+    
+    INJURIES {
+        int id PK
+        int player_id FK
+        string type "hamstring, knee, ankle, etc"
+        string severity "minor, moderate, severe"
+        date start_date
+        date expected_return "nullable"
+        string status "injured, recovering, fit"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    %% ================================================================
+    %% CONTENT & COMMUNITY
+    %% ================================================================
+    
+    ARTICLES {
+        int id PK
+        string title
+        string slug "URL-friendly"
+        text content
+        text summary
+        string thumbnail
+        int author_id FK
+        string category "news, analysis, interview, etc"
+        string tags
+        string source "Original source if aggregated"
+        string language "vi, en, etc"
+        boolean is_ai_generated
+        int views_count
+        int related_match_id FK "nullable"
+        int related_team_id FK "nullable"
+        int related_player_id FK "nullable"
+        int related_coach_id FK "nullable"
+        timestamp published_at
+        timestamp updated_at
+    }
+    
+    COMMENTS {
+        int id PK
+        int article_id FK
+        int user_id FK
+        text content
+        int parent_comment_id FK "nullable - for threading"
+        int likes
+        boolean is_approved "Moderation"
+        boolean is_reported
+        int report_count
+        string moderation_status "pending, approved, rejected"
+        int moderated_by FK "nullable - admin user_id"
+        timestamp moderated_at
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    USERS {
+        int id PK
+        string email "Unique"
+        string password_hash
+        string name
+        string avatar
+        string role "user, moderator, admin"
+        boolean email_verified
+        boolean terms_accepted
+        timestamp terms_accepted_at
+        boolean marketing_consent
+        boolean data_processing_consent
+        timestamp last_privacy_update
+        string last_ip_address
+        timestamp last_login
+        boolean is_deleted "Soft delete"
+        timestamp deleted_at
+        string deletion_reason
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    USER_PREFERENCES {
+        int id PK
+        int user_id FK "Unique"
+        int favorite_team_ids "Array of team IDs"
+        int favorite_player_ids "Array of player IDs"
+        string favorite_leagues "Array of league codes"
+        boolean notify_match_start
+        boolean notify_goals
+        boolean notify_news
+        boolean notify_transfers
+        string language "vi, en"
+        string response_style "concise, detailed"
+        string timezone
+        json custom_filters "Flexible JSON"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    CHAT_HISTORY {
+        int id PK
+        int user_id FK "nullable for anonymous"
+        text question
+        text answer
+        text sql_query "nullable"
+        json data_sources "Array of sources used"
+        int response_time_ms
+        int user_rating "1-5 stars, nullable"
+        boolean is_helpful "Thumbs up/down"
+        string user_feedback "Optional text feedback"
+        string error_type "sql_error, timeout, etc"
+        boolean sql_succeeded
+        int sources_used_count
+        timestamp created_at
+    }
+    
+    SOCIAL_POSTS {
+        int id PK
+        string platform "facebook, twitter, instagram"
+        string post_url
+        text content
+        string author
+        int likes
+        int comments_count
+        int shares_count
+        string sentiment "positive, negative, neutral"
+        int related_match_id FK "nullable"
+        int related_team_id FK "nullable"
+        int related_player_id FK "nullable"
+        json entities_mentioned "Auto-extracted entities"
+        timestamp posted_at
+        timestamp fetched_at
+    }
+    
+    %% ================================================================
+    %% MODERATION & AUDIT
+    %% ================================================================
+    
+    CONTENT_REPORTS {
+        int id PK
+        string content_type "comment, chat, article"
+        int content_id "ID of reported content"
+        int reported_by FK
+        string reason "spam, offensive, misinformation, etc"
+        text details "Optional description"
+        string status "pending, reviewed, actioned"
+        int reviewed_by FK "nullable - admin user_id"
+        timestamp reviewed_at
+        string action_taken "deleted, edited, warned, none"
+        timestamp created_at
+    }
+    
+    AUDIT_LOGS {
+        int id PK
+        string table_name
+        int record_id
+        string action "INSERT, UPDATE, DELETE"
+        json old_values "For UPDATE/DELETE"
+        json new_values "For INSERT/UPDATE"
+        int user_id FK "nullable - system actions"
+        string ip_address
+        timestamp created_at
+    }

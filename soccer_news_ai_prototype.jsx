@@ -726,7 +726,8 @@ function AIDrawer({ open, onClose, context }) {
         scale: { duration: 0.2 }
       }}
       className={cn(
-        "flex flex-col rounded-[2rem] overflow-hidden",
+        "flex flex-col overflow-hidden",
+        isMinimized ? "rounded-[2rem]" : "rounded-t-[2rem] rounded-b-[1.35rem]",
         "bg-gradient-to-br from-slate-50/95 via-white/95 to-slate-100/95",
         "backdrop-blur-xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)]",
         getPositionClass()
@@ -868,7 +869,7 @@ function AIDrawer({ open, onClose, context }) {
           data-name="Input Field Wrapper"
           data-level="3"
           className={cn("flex-1 relative group", isMinimized ? "h-full" : "")}
-          style={{ marginRight: isMinimized ? '0' : '56px', height: isMinimized ? '100%' : 'auto' }}
+          style={{ marginRight: isMinimized ? '0' : '46px', height: isMinimized ? '100%' : 'auto' }}
         >
           {/* ===== LEVEL 4: MAIN INPUT FIELD ===== */}
           <input
@@ -971,8 +972,10 @@ function AIDrawer({ open, onClose, context }) {
             aria-label="Send message"
             onClick={() => handleAsk()} 
             disabled={!input.trim() || isLoading}
-            className="absolute right-[7px] w-10 h-10 bg-transparent text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden hover:scale-105 active:scale-95 flex items-center justify-center"
-            style={{ borderRadius: '12px 12px 17px 12px' }}
+            className="absolute right-[3px] w-10 h-10 bg-transparent text-white disabled:opacity-40 
+            disabled:cursor-not-allowed transition-all duration-300 group/btn overflow-hidden 
+            hover:scale-105 active:scale-95 flex items-center justify-center"
+            style={{ borderRadius: '14px 14px 17px 14px' }}
             title="Send message (Enter)"
           >
             {/* ===== LEVEL 4: BUTTON IDLE STATE - Animated gradient border ===== */}
@@ -2113,9 +2116,14 @@ const MatchHeroHeader = ({ match, onClose, onAskAI }) => {
                 ✕
             </button>
 
-            {/* League Info - Top Left */}
-            <div className="absolute top-6 left-6 text-white text-sm font-normal">
-                {match.league}
+            {/* League Info - Top Left with Logo */}
+            <div className="absolute top-6 left-6 flex items-center gap-2">
+                <img 
+                    src="/imgs/primier_league.png" 
+                    alt="League Logo" 
+                    className="w-6 h-6 object-contain"
+                />
+                <span className="text-white text-sm font-normal">{match.league}</span>
             </div>
 
             {/* Season & Round - Top Right */}

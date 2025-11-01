@@ -6,10 +6,10 @@ erDiagram
     LEAGUES ||--o{ MATCHES : hosts
     
     TEAMS ||--o{ PLAYERS : has
-    TEAMS ||--o{ MATCHES : "plays as home"
+    TEAMS ||--o{ MATCHES : "plays as home"season
     TEAMS ||--o{ MATCHES : "plays as away"
     TEAMS ||--o{ STANDINGS : ranked
-    
+    season
     MATCHES ||--o{ MATCH_EVENTS : contains
     MATCHES ||--o{ LINEUPS : has
     MATCHES ||--o{ MATCH_STATS : has
